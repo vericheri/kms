@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KMS RS Mitra Medika</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --med-blue: #0d6efd;
+            --med-blue-hover: #0b5ed7;
+            --dark-blue: #0f172a;
+            --bg-color: #f8fafc;
+            --text-main: #334155;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --white: #ffffff;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Utility Classes */
+        .hidden { display: none !important; }
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-3 { gap: 0.75rem; }
+        .gap-4 { gap: 1rem; }
+        .w-full { width: 100%; }
+        .text-center { text-align: center; }
+
+        /* Buttons */
+        .btn {
+            padding: 0.6rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+        .btn-primary { background-color: var(--med-blue); color: var(--white); }
+        .btn-primary:hover { background-color: var(--med-blue-hover); }
+        .btn-danger { background-color: var(--danger); color: var(--white); }
+        .btn-danger:hover { background-color: #dc2626; }
+        .btn-success { background-color: var(--success); color: var(--white); }
+        .btn-success:hover { background-color: #059669; }
+        .btn-warning { background-color: var(--warning); color: var(--white); }
+        .btn-warning:hover { background-color: #d97706; }
+        .btn-outline { background-color: transparent; border: 1px solid var(--border-color); color: var(--text-main); }
+        .btn-outline:hover { background-color: #f1f5f9; }
+
+        /* Forms */
+        .form-group { margin-bottom: 1rem; }
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 0.4rem;
+            color: var(--text-main);
+        }
+        .form-control {
+            width: 100%;
+            padding: 0.6rem 0.8rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+            background: var(--white);
+        }
+        .form-control:focus { border-color: var(--med-blue); box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1); }
+        textarea.form-control { resize: vertical; min-height: 100px; }
+
+        /* Login View */
+        #login-view {
+            position: fixed; inset: 0;
+            background-color: var(--dark-blue);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000;
+        }
+        .login-card {
+            background: var(--white);
+            padding: 2.5rem;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .login-header { text-align: center; margin-bottom: 2rem; }
+        .login-header h1 { color: var(--dark-blue); font-size: 1.5rem; }
+        .login-header p { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.2rem; }
+        .error-msg {
+            background-color: #fee2e2; color: #b91c1c;
+            padding: 0.75rem; border-radius: 6px;
+            font-size: 0.85rem; text-align: center; margin-bottom: 1rem;
+            font-weight: 500;
+        }
+        .dummy-info {
+            margin-top: 1.5rem; padding: 1rem;
+            background-color: #f8fafc; border: 1px solid var(--border-color);
+            border-radius: 8px; font-size: 0.8rem; color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* App View (Header & Main) */
+        #app-view { display: flex; flex-direction: column; height: 100%; width: 100%; }
+        header {
+            background-color: var(--dark-blue); color: var(--white);
+            padding: 0 2rem; height: 64px;
+            display: flex; align-items: center; justify-content: space-between;
+            flex-shrink: 0;
+        }
+        .header-logo { display: flex; align-items: center; gap: 0.75rem; font-size: 1.25rem; font-weight: bold; }
+        .header-user { display: flex; align-items: center; gap: 1rem; }
+        .user-info { text-align: right; }
+        .user-name { font-size: 0.9rem; font-weight: 600; }
+        .user-role { font-size: 0.75rem; color: #94a3b8; text-transform: capitalize; }
+        
+        main {
+            flex: 1; overflow-y: auto;
+            padding: 2rem;
+        }
+        .container { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem; }
+
+        /* Dashboard Banner */
+        .banner {
+            background: var(--white);
+            border-radius: 12px; padding: 1.5rem 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-left: 5px solid var(--med-blue);
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 1rem;
+        }
+        .banner h2 { font-size: 1.5rem; color: var(--dark-blue); }
+        .banner p { color: var(--text-muted); font-size: 0.95rem; margin-top: 0.2rem; }
+        .stats { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .stat-box {
+            padding: 0.75rem 1.25rem; border-radius: 8px;
+            border: 1px solid; min-width: 130px;
+        }
+        .stat-blue { background-color: #eff6ff; border-color: #bfdbfe; }
+        .stat-orange { background-color: #fff7ed; border-color: #fed7aa; }
+        .stat-green { background-color: #f0fdf4; border-color: #bbf7d0; }
+        .stat-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+        .stat-blue .stat-label { color: #2563eb; }
+        .stat-orange .stat-label { color: #ea580c; }
+        .stat-green .stat-label { color: #16a34a; }
+        .stat-val { font-size: 1.5rem; font-weight: bold; margin-top: 0.2rem; }
+
+        /* Announcement Section */
+        .announcement-banner {
+            background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px;
+            padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;
+        }
+        .announcement-header { display: flex; justify-content: space-between; align-items: center; }
+        .announcement-header h3 { font-size: 1rem; color: #1e40af; display: flex; align-items: center; gap: 0.5rem; }
+        .announcement-body { font-size: 0.9rem; color: #1e293b; line-height: 1.5; }
+
+        /* Toolbar (Actions & Search) */
+        .toolbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+        .search-box { display: flex; gap: 0.5rem; width: 100%; max-width: 550px; }
+
+        /* Section Titles */
+        .section-title {
+            font-size: 1.1rem; font-weight: bold; color: var(--dark-blue);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem; margin-bottom: 1rem;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        /* Grid Lists */
+        .grid-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.25rem;
+        }
+        .card {
+            background: var(--white); border: 1px solid var(--border-color);
+            border-radius: 8px; padding: 1.25rem;
+            display: flex; flex-direction: column;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .card-badge {
+            display: inline-block; padding: 0.25rem 0.5rem; border-radius: 4px;
+            font-size: 0.7rem; font-weight: 600; margin-bottom: 0.75rem; width: fit-content;
+        }
+        .badge-blue { background: #eff6ff; color: #1d4ed8; }
+        .badge-orange { background: #fff7ed; color: #c2410c; }
+        .badge-purple { background: #f3e8ff; color: #7e22ce; }
+        .badge-green { background: #f0fdf4; color: #15803d; }
+        .card-title { font-size: 1.05rem; font-weight: bold; margin-bottom: 0.5rem; color: var(--dark-blue); }
+        .card-desc { font-size: 0.85rem; color: var(--text-muted); flex: 1; margin-bottom: 1rem; line-height: 1.5; }
+        .card-meta {
+            font-size: 0.75rem; color: #94a3b8; display: flex; justify-content: space-between;
+            border-top: 1px solid #f1f5f9; padding-top: 0.75rem;
+        }
+
+        /* Admin Panels & Lists */
+        .list-item {
+            background: var(--white); border: 1px solid var(--border-color);
+            border-radius: 8px; padding: 1rem; margin-bottom: 0.75rem;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
+        }
+        .list-item-content h4 { font-size: 1rem; color: var(--dark-blue); }
+        .list-item-content p { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem; }
+        .list-item-actions { display: flex; gap: 0.5rem; }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 2000; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+            padding: 1rem;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-content {
+            background: var(--white); border-radius: 12px;
+            width: 100%; max-width: 500px; max-height: 90vh;
+            display: flex; flex-direction: column;
+            transform: translateY(20px); transition: transform 0.3s;
+        }
+        .modal-overlay.active .modal-content { transform: translateY(0); }
+        .modal-content.large { max-width: 750px; }
+        .modal-header {
+            padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center;
+            flex-shrink: 0;
+        }
+        .modal-header h3 { font-size: 1.2rem; color: var(--dark-blue); }
+        .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted); }
+        .modal-body { padding: 1.5rem; overflow-y: auto; flex: 1; }
+        .modal-footer {
+            padding: 1.25rem 1.5rem; border-top: 1px solid var(--border-color);
+            display: flex; justify-content: flex-end; gap: 0.75rem; background: #f8fafc;
+            border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;
+            flex-shrink: 0;
+        }
+
+        /* Read SOP Specifics */
+        .sop-content { font-size: 0.95rem; line-height: 1.6; color: var(--text-main); white-space: pre-wrap; margin-bottom: 1rem; }
+        .attachment-box {
+            background: #f0fdf4; border: 1px solid #bbf7d0; padding: 0.75rem 1rem;
+            border-radius: 6px; display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.85rem; color: #166534; margin-top: 1rem;
+        }
+
+        /* Toasts */
+        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast {
+            padding: 12px 20px; border-radius: 6px; color: white; font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15); animation: fadeInOut 3s forwards;
+        }
+        .toast-success { background-color: var(--success); }
+        .toast-error { background-color: var(--danger); }
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(20px); }
+            15% { opacity: 1; transform: translateY(0); }
+            85% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-20px); }
+        }
+    </style>
+</head>
+<body>
+    <!-- LOGIN VIEW -->
+    <div id="login-view">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>RS Mitra Medika</h1>
+                <p>Sistem Manajemen Pengetahuan (KMS)</p>
+            </div>
+            <div id="login-error" class="error-msg hidden">Username atau password salah!</div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="login-username" class="form-control" required placeholder="Contoh: admin atau staf1">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="login-password" class="form-control" required placeholder="Masukkan password">
+                </div>
+                <button type="submit" class="btn btn-primary w-full">Masuk ke Sistem</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- APP VIEW -->
+    <div id="app-view" class="hidden">
+        <header>
+            <div class="header-logo">
+                <span>🏥 RS Mitra Medika</span>
+            </div>
+            <div class="header-user">
+                <div class="user-info">
+                    <div id="display-user-name" class="user-name">Nama Pengguna</div>
+                    <div id="display-user-role" class="user-role">Role</div>
+                </div>
+                <button onclick="openModal('profile-modal')" class="btn btn-outline" style="color: white; border-color: rgba(255,255,255,0.3); font-size: 0.8rem; padding: 0.4rem 0.7rem;">Profil</button>
+                <button onclick="logout()" class="btn btn-danger" style="font-size: 0.8rem; padding: 0.4rem 0.7rem;">Logout</button>
+            </div>
+        </header>
+
+        <main>
+            <div class="container">
+                <!-- Banner Sambutan -->
+                <div class="banner">
+                    <div>
+                        <h2 id="welcome-title">Selamat Datang</h2>
+                        <p>Pusat akses dokumen, SOP, kebijakan, serta informasi resmi RS Mitra Medika.</p>
+                    </div>
+                    <div class="stats">
+                        <div class="stat-box stat-blue">
+                            <div class="stat-label">Total SOP Terbit</div>
+                            <div id="stat-total-sop" class="stat-val">0</div>
+                        </div>
+                        <div class="stat-box stat-orange">
+                            <div class="stat-label">Draf Pending</div>
+                            <div id="stat-pending-sop" class="stat-val">0</div>
+                        </div>
+                        <div class="stat-box stat-green">
+                            <div class="stat-label">Terbitan Saya</div>
+                            <div id="stat-my-published" class="stat-val">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Informasi / Pengumuman Rumah Sakit -->
+                <div id="announcement-section"></div>
+
+                <!-- Action Bar & Search -->
+                <div class="toolbar">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="form-control" placeholder="Cari judul SOP atau dokumen..." oninput="renderDashboard()">
+                        <select id="category-filter" class="form-control" style="width: 180px;" onchange="renderDashboard()">
+                            <option value="">Semua Kategori</option>
+                        </select>
+                    </div>
+                    <div class="flex gap-2" id="action-buttons">
+                        <!-- Tombol dinamis berdasarkan role -->
+                    </div>
+                </div>
+
+                <!-- Panel Khusus Admin: Review Draf Masuk -->
+                <div id="admin-panel" class="hidden" style="background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color);">
+                    <div class="section-title">
+                        <span>Panel Admin: Review Draf Staf Menunggu Persetujuan</span>
+                    </div>
+                    <div id="admin-pending-list"></div>
+                </div>
+
+                <!-- Panel Admin: Kelola Akun Staf -->
+                <div id="admin-accounts-panel" class="hidden" style="background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color);">
+                    <div class="section-title">
+                        <span>Kelola Akun Staf Rumah Sakit</span>
+                        <button onclick="openModal('add-account-modal')" class="btn btn-primary" style="font-size: 0.8rem; padding: 0.3rem 0.6rem;">+ Buat Akun Staf</button>
+                    </div>
+                    <div id="accounts-list"></div>
+                </div>
+
+                <!-- Panel Admin: Kelola Kategori -->
+                <div id="admin-categories-panel" class="hidden" style="background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color);">
+                    <div class="section-title">
+                        <span>Kelola Kategori Dokumen</span>
+                        <button onclick="openModal('add-category-modal')" class="btn btn-primary" style="font-size: 0.8rem; padding: 0.3rem 0.6rem;">+ Tambah Kategori</button>
+                    </div>
+                    <div id="categories-list"></div>
+                </div>
+
+                <!-- Panel Admin: Kelola Informasi RS -->
+                <div id="admin-info-panel" class="hidden" style="background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color);">
+                    <div class="section-title">
+                        <span>Publikasi Informasi / Pengumuman RS</span>
+                        <button onclick="openModal('add-info-modal')" class="btn btn-primary" style="font-size: 0.8rem; padding: 0.3rem 0.6rem;">+ Buat Informasi</button>
+                    </div>
+                    <div id="info-list"></div>
+                </div>
+
+                <!-- Dokumen Terbit Saya -->
+                <div style="background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color);">
+                    <div class="section-title">
+                        <span>Dokumen / SOP yang Telah Saya Terbitkan</span>
+                    </div>
+                    <div id="my-published-list" class="grid-list"></div>
+                </div>
+
+                <!-- Daftar SOP Terbit Utama -->
+                <div>
+                    <div class="section-title">
+                        <span>Semua Dokumen & SOP Rumah Sakit yang Berlaku</span>
+                    </div>
+                    <div id="sop-grid" class="grid-list"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL: Ajukan Draf (User) / Upload Admin -->
+    <div id="upload-sop-modal" class="modal-overlay">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h3 id="upload-modal-title">Ajukan Draf Dokumen / SOP Baru</h3>
+                <button class="modal-close" onclick="closeModal('upload-sop-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="upload-sop-form">
+                    <div class="form-group">
+                        <label>Judul Dokumen / SOP</label>
+                        <input type="text" id="sop-title" class="form-control" required placeholder="Contoh: SOP Penanganan Pasien Gawat Darurat">
+                    </div>
+                    <div class="form-group">
+                        <label>Kategori</label>
+                        <select id="sop-category" class="form-control" required>
+                            <!-- Diisi via JS sesuai role -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Ringkasan / Isi Dokumen</label>
+                        <textarea id="sop-desc" class="form-control" required placeholder="Tuliskan isi atau ringkasan SOP secara lengkap di sini..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Unggah Berkas (PDF, DOCX, TXT, dll)</label>
+                        <input type="file" id="sop-file" class="form-control" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('upload-sop-modal')">Batal</button>
+                <button type="button" class="btn btn-primary" onclick="submitSopForm()">Kirim Dokumen</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Tambah Akun Staf (Admin) -->
+    <div id="add-account-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Tambah Akun Staf Baru</h3>
+                <button class="modal-close" onclick="closeModal('add-account-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="add-account-form">
+                    <div class="form-group">
+                        <label>Nama Tampilan / Nama Lengkap</label>
+                        <input type="text" id="new-acc-name" class="form-control" required placeholder="Contoh: Dr. Budi Santoso">
+                    </div>
+                    <div class="form-group">
+                        <label>Username (untuk Login)</label>
+                        <input type="text" id="new-acc-username" class="form-control" required placeholder="Contoh: budisantoso">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="new-acc-password" class="form-control" required placeholder="Masukkan password awal">
+                    </div>
+                    <div class="form-group">
+                        <label>Role</label>
+                        <select id="new-acc-role" class="form-control">
+                            <option value="user">Staf / User</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('add-account-modal')">Batal</button>
+                <button type="button" class="btn btn-primary" onclick="createNewAccount()">Simpan Akun</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Tambah Kategori -->
+    <div id="add-category-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Tambah Kategori Dokumen</h3>
+                <button class="modal-close" onclick="closeModal('add-category-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="add-category-form">
+                    <div class="form-group">
+                        <label>Nama Kategori</label>
+                        <input type="text" id="new-cat-name" class="form-control" required placeholder="Contoh: SOP Keperawatan">
+                    </div>
+                    <div class="form-group">
+                        <label>Peruntukan Kategori</label>
+                        <select id="new-cat-type" class="form-control">
+                            <option value="user">User / Staf (Umum)</option>
+                            <option value="admin">Khusus Admin (Kebijakan/SK)</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('add-category-modal')">Batal</button>
+                <button type="button" class="btn btn-primary" onclick="createNewCategory()">Simpan Kategori</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Tambah Informasi / Pengumuman RS -->
+    <div id="add-info-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Buat Informasi / Pengumuman RS</h3>
+                <button class="modal-close" onclick="closeModal('add-info-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="add-info-form">
+                    <div class="form-group">
+                        <label>Judul Pengumuman</label>
+                        <input type="text" id="info-title" class="form-control" required placeholder="Contoh: Jadwal Akreditasi RS 2026">
+                    </div>
+                    <div class="form-group">
+                        <label>Isi Informasi</label>
+                        <textarea id="info-content" class="form-control" required placeholder="Tuliskan informasi penting untuk seluruh staf..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('add-info-modal')">Batal</button>
+                <button type="button" class="btn btn-primary" onclick="createNewInfo()">Publikasikan Info</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Ganti Profil & Password -->
+    <div id="profile-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Pengaturan Profil & Sandi</h3>
+                <button class="modal-close" onclick="closeModal('profile-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="profile-form">
+                    <div class="form-group">
+                        <label>Nama Tampilan (Nama Lengkap)</label>
+                        <input type="text" id="profile-name" class="form-control" required placeholder="Nama Anda yang tampil di sistem">
+                    </div>
+                    <div class="form-group">
+                        <label>Username (Untuk Login)</label>
+                        <input type="text" id="profile-username" class="form-control" required placeholder="Username login Anda">
+                    </div>
+                    <hr style="margin: 1.5rem 0; border: 0; border-top: 1px solid var(--border-color);">
+                    <div class="form-group">
+                        <label>Password Lama</label>
+                        <input type="password" id="profile-old-pass" class="form-control" placeholder="Wajib diisi jika ingin mengganti password">
+                    </div>
+                    <div class="form-group">
+                        <label>Password Baru</label>
+                        <input type="password" id="profile-new-pass" class="form-control" placeholder="Masukkan password baru">
+                    </div>
+                    <div class="form-group">
+                        <label>Konfirmasi Password Baru</label>
+                        <input type="password" id="profile-confirm-pass" class="form-control" placeholder="Ulangi password baru">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('profile-modal')">Batal</button>
+                <button type="button" class="btn btn-primary" onclick="updateProfileData()">Simpan Perubahan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Baca SOP -->
+    <div id="read-sop-modal" class="modal-overlay">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h3 id="read-sop-title">Judul SOP</h3>
+                <button class="modal-close" onclick="closeModal('read-sop-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                    <span id="read-sop-category" class="card-badge badge-blue">Kategori</span>
+                    <span id="read-sop-author" class="card-badge badge-orange" style="background:#f1f5f9; color:#475569;">Oleh: -</span>
+                    <span id="read-sop-date" class="card-badge" style="background:#e2e8f0; color:#334155;">Tanggal</span>
+                </div>
+                <div id="read-sop-desc" class="sop-content">Isi dokumen...</div>
+                <div id="read-sop-attachment" class="attachment-box hidden">
+                    <span id="read-sop-filename">nama_file.pdf</span>
+                    <button class="btn btn-success" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="downloadAttachment()">Unduh File Asli</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('read-sop-modal')">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script>
+        // Dummy Data Awal
+        let users = [
+            { id: 1, name: 'Admin Utama', username: 'admin', password: 'admin123', role: 'admin' },
+            { id: 2, name: 'Ns. Siti Rahma, S.Kep', username: 'staf1', password: 'staf123', role: 'user' },
+            { id: 3, name: 'dr. Andi Pratama', username: 'staf2', password: 'staf123', role: 'user' }
+        ];
+
+        let categories = [
+            { id: 1, name: 'SOP Medis', type: 'user' },
+            { id: 2, name: 'SOP Non-Medis', type: 'user' },
+            { id: 3, name: 'Panduan Klinis', type: 'user' },
+            { id: 4, name: 'Kebijakan RS', type: 'admin' },
+            { id: 5, name: 'SK Direksi', type: 'admin' }
+        ];
+
+        let announcements = [
+            { id: 1, title: 'Jadwal Akreditasi Rumah Sakit 2026', content: 'Dimohon seluruh unit mempersiapkan dokumen administrasi klinis sebelum akhir bulan ini.', author: 'Admin Utama', date: '2026-10-20' }
+        ];
+
+        let sopList = [
+            { id: 1, title: 'SOP Triase Pasien Gawat Darurat', category: 'SOP Medis', desc: 'Panduan lengkap tata cara triase (pemilihan) berdasarkan tingkat kegawatdaruratan di Instalasi Gawat Darurat.', author: 'Admin Utama', date: '2023-10-01', status: 'published', filename: 'sop_triase_ugd.pdf', fileData: 'Konten dokumen SOP Triase Resmi RS Mitra Medika...' },
+            { id: 2, title: 'Panduan Tata Tertib Pengunjung & Penunggu Pasien', category: 'SOP Non-Medis', desc: 'Ketentuan jam berkunjung: 1. Pukul 11.00 - 13.00 WIB. 2. Pukul 17.00 - 19.00 WIB.', author: 'Admin Utama', date: '2023-10-05', status: 'published', filename: 'tata_tertib_pengunjung.pdf', fileData: 'Konten tata tertib pengunjung rumah sakit...' },
+            { id: 3, title: 'Kebijakan Keselamatan Pasien Nasional', category: 'Kebijakan RS', desc: 'Standar wajib pencegahan risiko jatuh dan insiden keselamatan pasien di seluruh bangsal perawatan.', author: 'Admin Utama', date: '2026-10-15', status: 'published', filename: 'kebijakan_keselamatan.pdf', fileData: 'Isi lengkap kebijakan keselamatan pasien...' }
+        ];
+
+        let drafts = [
+            { id: 1, title: 'SOP Sterilisasi Alat Bedah Sentral', category: 'SOP Medis', desc: 'Prosedur sterilisasi instrumen medis menggunakan autoclave bersuhu tinggi.', authorName: 'Ns. Siti Rahma, S.Kep', authorUsername: 'staf1', date: '2026-10-18', filename: 'sterilisasi_alat.docx', fileData: 'Draft SOP sterilisasi alat...' }
+        ];
+
+        let currentUser = null;
+        let activeAttachmentData = null;
+
+        // Login Handler
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const u = document.getElementById('login-username').value.trim();
+            const p = document.getElementById('login-password').value.trim();
+            
+            const found = users.find(x => x.username === u && x.password === p);
+            if(found) {
+                currentUser = found;
+                document.getElementById('login-error').classList.add('hidden');
+                document.getElementById('login-view').classList.add('hidden');
+                document.getElementById('app-view').classList.remove('hidden');
+                initApp();
+            } else {
+                document.getElementById('login-error').classList.remove('hidden');
+            }
+        });
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('login-username').value = '';
+            document.getElementById('login-password').value = '';
+            document.getElementById('app-view').classList.add('hidden');
+            document.getElementById('login-view').classList.remove('hidden');
+            showToast('Berhasil keluar dari sistem.', 'success');
+        }
+
+        function initApp() {
+            document.getElementById('display-user-name').innerText = currentUser.name;
+            document.getElementById('display-user-role').innerText = currentUser.role === 'admin' ? 'Administrator' : 'Staf / User';
+            document.getElementById('welcome-title').innerText = `Selamat Datang, ${currentUser.name}!`;
+
+            // Action Buttons
+            const actContainer = document.getElementById('action-buttons');
+            if(currentUser.role === 'admin') {
+                actContainer.innerHTML = `
+                    <button onclick="openUploadModal()" class="btn btn-primary">+ Unggah Dokumen Resmi</button>
+                `;
+            } else {
+                actContainer.innerHTML = `
+                    <button onclick="openUploadModal()" class="btn btn-primary">+ Ajukan Draf SOP</button>
+                `;
+            }
+
+            // Admin Panels Visibility
+            if(currentUser.role === 'admin') {
+                document.getElementById('admin-panel').classList.remove('hidden');
+                document.getElementById('admin-accounts-panel').classList.remove('hidden');
+                document.getElementById('admin-categories-panel').classList.remove('hidden');
+                document.getElementById('admin-info-panel').classList.remove('hidden');
+            } else {
+                document.getElementById('admin-panel').classList.add('hidden');
+                document.getElementById('admin-accounts-panel').classList.add('hidden');
+                document.getElementById('admin-categories-panel').classList.add('hidden');
+                document.getElementById('admin-info-panel').classList.add('hidden');
+            }
+
+            populateCategoryDropdowns();
+            renderDashboard();
+        }
+
+        function populateCategoryDropdowns() {
+            const filterSelect = document.getElementById('category-filter');
+            filterSelect.innerHTML = '<option value="">Semua Kategori</option>';
+            categories.forEach(c => {
+                filterSelect.innerHTML += `<option value="${c.name}">${c.name} (${c.type === 'admin' ? 'Admin' : 'User'})</option>`;
+            });
+
+            const sopCatSelect = document.getElementById('sop-category');
+            sopCatSelect.innerHTML = '';
+            let allowedCats = [];
+            if(currentUser.role === 'admin') {
+                allowedCats = categories.filter(c => c.type === 'admin'); // Admin hanya kategori admin untuk unggah langsung
+            } else {
+                allowedCats = categories.filter(c => c.type === 'user'); // User hanya kategori user untuk draf
+            }
+            allowedCats.forEach(c => {
+                sopCatSelect.innerHTML += `<option value="${c.name}">${c.name}</option>`;
+            });
+        }
+
+        function renderDashboard() {
+            const searchVal = document.getElementById('search-input').value.toLowerCase();
+            const catVal = document.getElementById('category-filter').value;
+
+            // Hitung statistik
+            document.getElementById('stat-total-sop').innerText = sopList.length;
+            
+            let userDrafts = drafts.filter(d => d.authorUsername === currentUser.username);
+            let pendingCount = currentUser.role === 'admin' ? drafts.length : userDrafts.length;
+            document.getElementById('stat-pending-sop').innerText = pendingCount;
+
+            let myPublished = sopList.filter(s => s.author === currentUser.name);
+            document.getElementById('stat-my-published').innerText = myPublished.length;
+
+            // Render Pengumuman
+            const annContainer = document.getElementById('announcement-section');
+            if(announcements.length > 0) {
+                let latest = announcements[announcements.length - 1];
+                annContainer.innerHTML = `
+                    <div class="announcement-banner">
+                        <div class="announcement-header">
+                            <h3>📢 Informasi RS: ${latest.title}</h3>
+                            <span style="font-size:0.75rem; color:#64748b;">${latest.date}</span>
+                        </div>
+                        <div class="announcement-body">${latest.content}</div>
+                    </div>
+                `;
+            } else {
+                annContainer.innerHTML = '';
+            }
+
+            // Render SOP Utama
+            const grid = document.getElementById('sop-grid');
+            let filteredSop = sopList.filter(s => {
+                let matchSearch = s.title.toLowerCase().includes(searchVal) || s.desc.toLowerCase().includes(searchVal);
+                let matchCat = catVal === '' || s.category === catVal;
+                return matchSearch && matchCat;
+            });
+
+            if(filteredSop.length === 0) {
+                grid.innerHTML = `<p style="color:var(--text-muted); grid-column: 1/-1; text-align:center; padding: 2rem;">Tidak ada dokumen SOP ditemukan.</p>`;
+            } else {
+                grid.innerHTML = filteredSop.map(s => `
+                    <div class="card">
+                        <span class="card-badge badge-blue">${s.category}</span>
+                        <div class="card-title">${s.title}</div>
+                        <div class="card-desc">${s.desc}</div>
+                        <div class="card-meta">
+                            <span>Oleh: ${s.author}</span>
+                            <span>${s.date}</span>
+                        </div>
+                        <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                            <button class="btn btn-outline" style="flex:1; font-size:0.8rem;" onclick="readSop(${s.id})">Baca & Unduh</button>
+                            ${currentUser.role === 'admin' ? `<button class="btn btn-danger" style="font-size:0.8rem;" onclick="deleteSop(${s.id})">Hapus</button>` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Render Dokumen Terbit Saya (Berlaku untuk User & Admin)
+            const myPubGrid = document.getElementById('my-published-list');
+            if(myPublished.length === 0) {
+                myPubGrid.innerHTML = `<p style="color:var(--text-muted); grid-column: 1/-1; font-size:0.9rem;">Anda belum menerbitkan dokumen atau SOP.</p>`;
+            } else {
+                myPubGrid.innerHTML = myPublished.map(s => `
+                    <div class="card">
+                        <span class="card-badge badge-green">Terbit</span>
+                        <div class="card-title">${s.title}</div>
+                        <div class="card-desc">${s.desc}</div>
+                        <div class="card-meta">
+                            <span>Kategori: ${s.category}</span>
+                            <span>${s.date}</span>
+                        </div>
+                        <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                            <button class="btn btn-outline" style="flex:1; font-size:0.8rem;" onclick="readSop(${s.id})">Baca Dokumen</button>
+                            <button class="btn btn-danger" style="font-size:0.8rem;" onclick="deleteSop(${s.id})">Hapus</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Render Admin Panel
+            if(currentUser.role === 'admin') {
+                renderAdminPendingList();
+                renderAdminAccountsList();
+                renderAdminCategoriesList();
+                renderAdminInfoList();
+            }
+        }
+
+        function renderAdminPendingList() {
+            const container = document.getElementById('admin-pending-list');
+            if(drafts.length === 0) {
+                container.innerHTML = `<p style="color:var(--text-muted); font-size:0.9rem;">Tidak ada draf menunggu review.</p>`;
+                return;
+            }
+            container.innerHTML = drafts.map(d => `
+                <div class="list-item">
+                    <div class="list-item-content">
+                        <h4>${d.title} <span class="card-badge badge-orange" style="margin-left:5px;">${d.category}</span></h4>
+                        <p>Diajukan oleh: <strong>${d.authorName}</strong> pada ${d.date}</p>
+                        <p style="font-style:italic; margin-top:4px;">"${d.desc.substring(0, 100)}..."</p>
+                    </div>
+                    <div class="list-item-actions">
+                        <button class="btn btn-outline" style="font-size:0.8rem;" onclick="previewDraft(${d.id})">Lihat</button>
+                        <button class="btn btn-success" style="font-size:0.8rem;" onclick="approveDraft(${d.id})">Approve</button>
+                        <button class="btn btn-danger" style="font-size:0.8rem;" onclick="rejectDraft(${d.id})">Reject</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderAdminAccountsList() {
+            const container = document.getElementById('accounts-list');
+            container.innerHTML = users.map(u => `
+                <div class="list-item">
+                    <div class="list-item-content">
+                        <h4>${u.name} <span class="card-badge ${u.role === 'admin' ? 'badge-blue' : 'badge-purple'}">${u.role}</span></h4>
+                        <p>Username Login: <code>${u.username}</code></p>
+                    </div>
+                    <div class="list-item-actions">
+                        ${u.id !== currentUser.id ? `<button class="btn btn-danger" style="font-size:0.8rem;" onclick="deleteAccount(${u.id})">Hapus</button>` : '<span style="font-size:0.75rem; color:#64748b;">(Akun Anda)</span>'}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderAdminCategoriesList() {
+            const container = document.getElementById('categories-list');
+            container.innerHTML = categories.map(c => `
+                <div class="list-item">
+                    <div class="list-item-content">
+                        <h4>${c.name} <span class="card-badge ${c.type === 'admin' ? 'badge-orange' : 'badge-blue'}">Peruntukan: ${c.type}</span></h4>
+                    </div>
+                    <div class="list-item-actions">
+                        <button class="btn btn-danger" style="font-size:0.8rem;" onclick="deleteCategory(${c.id})">Hapus</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderAdminInfoList() {
+            const container = document.getElementById('info-list');
+            if(announcements.length === 0) {
+                container.innerHTML = `<p style="color:var(--text-muted); font-size:0.9rem;">Belum ada informasi yang dipublikasikan.</p>`;
+                return;
+            }
+            container.innerHTML = announcements.map(a => `
+                <div class="list-item">
+                    <div class="list-item-content">
+                        <h4>${a.title}</h4>
+                        <p>${a.content.substring(0, 80)}... (${a.date})</p>
+                    </div>
+                    <div class="list-item-actions">
+                        <button class="btn btn-danger" style="font-size:0.8rem;" onclick="deleteInfo(${a.id})">Hapus</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openModal(id) {
+            if(id === 'profile-modal') {
+                document.getElementById('profile-name').value = currentUser.name;
+                document.getElementById('profile-username').value = currentUser.username;
+                document.getElementById('profile-old-pass').value = '';
+                document.getElementById('profile-new-pass').value = '';
+                document.getElementById('profile-confirm-pass').value = '';
+            }
+            document.getElementById(id).classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        function openUploadModal() {
+            document.getElementById('sop-title').value = '';
+            document.getElementById('sop-desc').value = '';
+            document.getElementById('sop-file').value = '';
+            document.getElementById('upload-modal-title').innerText = currentUser.role === 'admin' ? 'Unggah Dokumen / SOP Resmi' : 'Ajukan Draf Dokumen / SOP Baru';
+            openModal('upload-sop-modal');
+        }
+
+        // Submit SOP / Draft Form
+        function submitSopForm() {
+            const title = document.getElementById('sop-title').value.trim();
+            const category = document.getElementById('sop-category').value;
+            const desc = document.getElementById('sop-desc').value.trim();
+            const fileInput = document.getElementById('sop-file');
+
+            if(!title || !desc) {
+                showToast('Judul dan isi dokumen wajib diisi!', 'error');
+                return;
+            }
+
+            let filename = fileInput.files.length > 0 ? fileInput.files[0].name : 'dokumen_lampiran.pdf';
+            let fileDataContent = `Dokumen Resmi: ${title}\nKategori: ${category}\nIsi:\n${desc}`;
+
+            if(currentUser.role === 'admin') {
+                // Admin langsung terbit dengan kategori admin
+                const newSop = {
+                    id: Date.now(),
+                    title,
+                    category,
+                    desc,
+                    author: currentUser.name,
+                    date: new Date().toISOString().split('T')[0],
+                    status: 'published',
+                    filename,
+                    fileData: fileDataContent
+                };
+                sopList.push(newSop);
+                showToast('Dokumen berhasil diterbitkan secara langsung!', 'success');
+            } else {
+                // Staf masuk ke draf dengan kategori user
+                const newDraft = {
+                    id: Date.now(),
+                    title,
+                    category,
+                    desc,
+                    authorName: currentUser.name,
+                    authorUsername: currentUser.username,
+                    date: new Date().toISOString().split('T')[0],
+                    filename,
+                    fileData: fileDataContent
+                };
+                drafts.push(newDraft);
+                showToast('Draf berhasil diajukan dan menunggu review admin.', 'success');
+            }
+
+            closeModal('upload-sop-modal');
+            renderDashboard();
+        }
+
+        // Approve / Reject Draft
+        function approveDraft(id) {
+            const index = drafts.findIndex(d => d.id === id);
+            if(index !== -1) {
+                const d = drafts[index];
+                const publishedSop = {
+                    id: Date.now(),
+                    title: d.title,
+                    category: d.category,
+                    desc: d.desc,
+                    author: d.authorName,
+                    date: new Date().toISOString().split('T')[0],
+                    status: 'published',
+                    filename: d.filename,
+                    fileData: d.fileData
+                };
+                sopList.push(publishedSop);
+                drafts.splice(index, 1);
+                showToast('Draf disetujui dan resmi diterbitkan.', 'success');
+                renderDashboard();
+            }
+        }
+
+        function rejectDraft(id) {
+            drafts = drafts.filter(d => d.id !== id);
+            showToast('Draf ditolak.', 'error');
+            renderDashboard();
+        }
+
+        function previewDraft(id) {
+            const d = drafts.find(x => x.id === id);
+            if(d) {
+                readSopCustom({
+                    title: d.title,
+                    category: d.category,
+                    author: d.authorName,
+                    date: d.date,
+                    desc: d.desc,
+                    filename: d.filename,
+                    fileData: d.fileData
+                });
+            }
+        }
+
+        // Akun, Kategori, & Informasi Management
+        function createNewAccount() {
+            const name = document.getElementById('new-acc-name').value.trim();
+            const username = document.getElementById('new-acc-username').value.trim();
+            const password = document.getElementById('new-acc-password').value.trim();
+            const role = document.getElementById('new-acc-role').value;
+
+            if(!name || !username || !password) {
+                showToast('Semua kolom akun wajib diisi!', 'error');
+                return;
+            }
+
+            if(users.some(u => u.username === username)) {
+                showToast('Username sudah digunakan oleh akun lain!', 'error');
+                return;
+            }
+
+            users.push({ id: Date.now(), name, username, password, role });
+            closeModal('add-account-modal');
+            showToast('Akun staf berhasil dibuat.', 'success');
+            renderDashboard();
+        }
+
+        function deleteAccount(id) {
+            if(confirm('Yakin ingin menghapus akun ini?')) {
+                users = users.filter(u => u.id !== id);
+                showToast('Akun berhasil dihapus.', 'success');
+                renderDashboard();
+            }
+        }
+
+        function createNewCategory() {
+            const name = document.getElementById('new-cat-name').value.trim();
+            const type = document.getElementById('new-cat-type').value;
+
+            if(!name) {
+                showToast('Nama kategori wajib diisi!', 'error');
+                return;
+            }
+
+            categories.push({ id: Date.now(), name, type });
+            closeModal('add-category-modal');
+            populateCategoryDropdowns();
+            showToast('Kategori baru berhasil ditambahkan.', 'success');
+            renderDashboard();
+        }
+
+        function deleteCategory(id) {
+            categories = categories.filter(c => c.id !== id);
+            populateCategoryDropdowns();
+            showToast('Kategori berhasil dihapus.', 'success');
+            renderDashboard();
+        }
+
+        function createNewInfo() {
+            const title = document.getElementById('info-title').value.trim();
+            const content = document.getElementById('info-content').value.trim();
+
+            if(!title || !content) {
+                showToast('Judul dan isi informasi wajib diisi!', 'error');
+                return;
+            }
+
+            announcements.push({
+                id: Date.now(),
+                title,
+                content,
+                author: currentUser.name,
+                date: new Date().toISOString().split('T')[0]
+            });
+
+            closeModal('add-info-modal');
+            showToast('Informasi berhasil dipublikasikan.', 'success');
+            renderDashboard();
+        }
+
+        function deleteInfo(id) {
+            announcements = announcements.filter(a => a.id !== id);
+            showToast('Informasi berhasil dihapus.', 'success');
+            renderDashboard();
+        }
+
+        // Profil & Password Update
+        function updateProfileData() {
+            const newName = document.getElementById('profile-name').value.trim();
+            const newUsername = document.getElementById('profile-username').value.trim();
+            const oldPass = document.getElementById('profile-old-pass').value.trim();
+            const newPass = document.getElementById('profile-new-pass').value.trim();
+            const confirmPass = document.getElementById('profile-confirm-pass').value.trim();
+
+            if(!newName || !newUsername) {
+                showToast('Nama tampilan dan username tidak boleh kosong!', 'error');
+                return;
+            }
+
+            if(users.some(u => u.username === newUsername && u.id !== currentUser.id)) {
+                showToast('Username sudah dipakai akun lain!', 'error');
+                return;
+            }
+
+            // Jika berniat ganti password
+            if(oldPass || newPass || confirmPass) {
+                if(oldPass !== currentUser.password) {
+                    showToast('Password lama Anda salah!', 'error');
+                    return;
+                }
+                if(!newPass) {
+                    showToast('Password baru tidak boleh kosong!', 'error');
+                    return;
+                }
+                if(newPass !== confirmPass) {
+                    showToast('Konfirmasi password baru tidak cocok!', 'error');
+                    return;
+                }
+                currentUser.password = newPass;
+            }
+
+            currentUser.name = newName;
+            currentUser.username = newUsername;
+
+            // Update di array users
+            let userObj = users.find(u => u.id === currentUser.id);
+            if(userObj) {
+                userObj.name = newName;
+                userObj.username = newUsername;
+                userObj.password = currentUser.password;
+            }
+
+            document.getElementById('display-user-name').innerText = currentUser.name;
+            document.getElementById('welcome-title').innerText = `Selamat Datang, ${currentUser.name}!`;
+
+            closeModal('profile-modal');
+            showToast('Profil dan pengaturan sandi berhasil diperbarui.', 'success');
+            renderDashboard();
+        }
+
+        // Baca & Unduh File SOP
+        function readSop(id) {
+            const s = sopList.find(x => x.id === id);
+            if(s) {
+                readSopCustom(s);
+            }
+        }
+
+        function readSopCustom(data) {
+            document.getElementById('read-sop-title').innerText = data.title;
+            document.getElementById('read-sop-category').innerText = data.category;
+            document.getElementById('read-sop-author').innerText = `Oleh: ${data.author}`;
+            document.getElementById('read-sop-date').innerText = data.date;
+            document.getElementById('read-sop-desc').innerText = data.desc;
+
+            const attBox = document.getElementById('read-sop-attachment');
+            if(data.filename) {
+                attBox.classList.remove('hidden');
+                document.getElementById('read-sop-filename').innerText = data.filename;
+                activeAttachmentData = {
+                    filename: data.filename,
+                    content: data.fileData || data.desc
+                };
+            } else {
+                attBox.classList.add('hidden');
+            }
+
+            openModal('read-sop-modal');
+        }
+
+        function downloadAttachment() {
+            if(!activeAttachmentData) return;
+            const blob = new Blob([activeAttachmentData.content], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = activeAttachmentData.filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('File berhasil diunduh.', 'success');
+        }
+
+        function deleteSop(id) {
+            if(confirm('Yakin ingin menghapus dokumen SOP ini secara permanen?')) {
+                sopList = sopList.filter(s => s.id !== id);
+                showToast('Dokumen berhasil dihapus.', 'success');
+                renderDashboard();
+            }
+        }
+
+        // Toast Notification helper
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type === 'success' ? 'toast-success' : 'toast-error'}`;
+            toast.innerText = message;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
